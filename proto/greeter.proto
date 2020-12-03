@@ -1,0 +1,39 @@
+syntax = "proto3"; //声明proto的版本 只能 是3，才支持 grpc
+
+//声明 包名
+package Greeter;
+
+//声明grpc服务
+service Greeter {
+    /*
+    声名一个 sayhello 接口
+    它的参数 是 HelloRequest
+    它的返回参数是 HelloReply
+    */
+    rpc SayHello (HelloRequest) returns (HelloReply) {
+    }
+
+    rpc LearnForeignLanguage (LanguageRequest) returns (LanguageReply) {
+    }
+}
+
+//参数结构
+message HelloRequest {
+    string name = 1;
+}
+
+//参数结构
+message HelloReply {
+    string message = 1;
+}
+
+message LanguageRequest {
+    string kind = 1;
+}
+
+
+message LanguageReply {
+    uint32 score = 1;
+}
+
+//protoc --go_out=plugins=grpc:. helloworld.proto
