@@ -1,25 +1,14 @@
 package main
 
 import (
-	"context"
-	Greeter "github.com/tianzuoan/grpc-go-demo/proto"
+	"github.com/tianzuoan/grpc-go-demo/service"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
 )
 
-const PORT = ":50051"
-
-type server struct{}
-
-func (s *server) SayHello(ctx context.Context, in *Greeter.HelloRequest) (*Greeter.HelloReply, error) {
-	return &Greeter.HelloReply{Message: in.GetName() + "hello"}, nil
-}
-
-func (s *server) LearnForeignLanguage(ctx context.Context, in *Greeter.LanguageRequest) (*Greeter.LanguageReply, error) {
-	return &Greeter.LanguageReply{Score: 150}, nil
-}
+const PORT = ":10051"
 
 func main() {
 	//监听端口
@@ -28,14 +17,14 @@ func main() {
 		return
 	}
 	//创建一个grpc 服务器
-	s := grpc.NewServer()
+	grpcServer := grpc.NewServer()
 	//注册事件
-	Greeter.RegisterGreeterServer(s, &server{})
+	service.RegisterTinaServer(grpcServer, service.NewTinaService())
 
-	//gRPC服务反射
-	reflection.Register(s)
+	//gRPC服务反射,方便grpcurl调试
+	reflection.Register(grpcServer)
 
 	log.Printf("grpc server start at: %v", PORT)
 	//处理链接
-	_ = s.Serve(lis)
+	_ = grpcServer.Serve(lis)
 }
