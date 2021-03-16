@@ -2,9 +2,12 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"github.com/tianzuoan/grpc-go-demo/service"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"io/ioutil"
 	"log"
 )
 
@@ -13,7 +16,8 @@ const (
 )
 
 func main() {
-	grpcServerWithCredential()
+	//grpcServerWithCredential()
+	grpcServerWithCACertificate()
 }
 
 func grpcServerInsecure() {
@@ -47,6 +51,42 @@ func grpcServerWithCredential() {
 	}
 	//通过grpc 库 建立一个连接（带凭证）
 	conn, err := grpc.Dial(ADDRESS, grpc.WithTransportCredentials(transportCredentials))
+	if err != nil {
+		return
+	}
+	defer conn.Close()
+
+	//通过刚刚的连接 生成一个client对象。
+	c := service.NewTinaClient(conn)
+	//直接通过 client对象 调用 服务端的函数
+	r, err := c.SayHello(context.Background(), &service.HelloRequest{Name: "马德福"})
+	if err != nil {
+		log.Fatal("tina service could not say hello:", err)
+	}
+	log.Printf("tina say hello: %s", r.Message)
+	langReply, err := c.LearnForeignLanguage(context.Background(), &service.LanguageRequest{Kind: "chinese"})
+	if err != nil {
+		log.Fatal("could not learn language,reason is :%v", err)
+	}
+	log.Printf("learn language,the score is:%v", langReply.Score)
+}
+
+func grpcServerWithCACertificate() {
+	//创建凭证
+	certificate, err := tls.LoadX509KeyPair("../ca_cert/client.pem", "../ca_cert/client.key")
+	if err != nil {
+		log.Fatal("certificate load failed!err:", err)
+	}
+	certPool := x509.NewCertPool()
+	caPemContentBytes, err := ioutil.ReadFile("../ca_cert/ca.pem")
+	certPool.AppendCertsFromPEM(caPemContentBytes)
+	creds := credentials.NewTLS(&tls.Config{
+		Certificates: []tls.Certificate{certificate},
+		ServerName:   "localhost",
+		RootCAs:      certPool,
+	})
+	//通过grpc 库 建立一个连接（带凭证）
+	conn, err := grpc.Dial(ADDRESS, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		return
 	}

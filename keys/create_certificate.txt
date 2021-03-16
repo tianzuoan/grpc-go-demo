@@ -1,0 +1,8 @@
+使用证书
+1、openssl
+2、genrsa -des3 -out server.key 2048 (会生成server.key私钥文件)
+3、req -new -key server.key -out server.csr
+(注意common name，请填写 localhost或者域名)
+4、rsa -in server.key -out server_no_password.key
+(删除密码)
+5、x509 -req -days 365 -in server.csr -signkey server_no_password.key -out server.crt

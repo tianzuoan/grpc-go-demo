@@ -1,11 +1,14 @@
 package main
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"github.com/tianzuoan/grpc-go-demo/service"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/reflection"
+	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -14,7 +17,8 @@ import (
 const PORT = ":8080"
 
 func main() {
-	grpcServerWithHttp2()
+	//grpcServerWithHttp2()
+	grpcServerWithCACertificate()
 }
 
 func grpcServerInsecure() {
@@ -90,4 +94,35 @@ func grpcServerWithHttp2() {
 	}
 	//http服务启动监听并带证书认证
 	_ = httpServer.ListenAndServeTLS("../keys/server.crt", "../keys/server_no_password.key")
+}
+
+func grpcServerWithCACertificate() {
+	lis, err := net.Listen("tcp", PORT)
+	if err != nil {
+		return
+	}
+
+	certificate, err := tls.LoadX509KeyPair("../ca_cert/server.pem", "../ca_cert/server.key")
+	if err != nil {
+		log.Fatal("certificate load failed!err:", err)
+	}
+	certPool := x509.NewCertPool()
+	caPemContentBytes, err := ioutil.ReadFile("../ca_cert/ca.pem")
+	certPool.AppendCertsFromPEM(caPemContentBytes)
+	creds := credentials.NewTLS(&tls.Config{
+		Certificates: []tls.Certificate{certificate},
+		ClientAuth:   tls.RequireAndVerifyClientCert,
+		ClientCAs:    certPool,
+	})
+	//创建一个grpc 服务器（带证书）
+	grpcServer := grpc.NewServer(grpc.Creds(creds))
+	//注册事件
+	service.RegisterTinaServer(grpcServer, service.NewTinaService())
+
+	//gRPC服务反射,方便grpcurl调试
+	reflection.Register(grpcServer)
+
+	log.Printf("grpc server start at: %v", PORT)
+	//处理链接
+	_ = grpcServer.Serve(lis)
 }
