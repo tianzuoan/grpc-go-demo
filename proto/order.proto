@@ -1,0 +1,23 @@
+syntax = "proto3"; //声明proto的版本
+
+//声明 包名
+package service;
+
+import "google/api/annotations.proto";
+import "model.proto";
+
+
+//声明grpc服务
+service OrderService {
+    rpc NewOrder (Order) returns (NewOrderReply) {
+        option (google.api.http) = {
+            post: "/order"
+        };
+    }
+}
+
+message NewOrderReply {
+    int32 status = 1;
+    string message = 2;
+    Order data = 3;
+}

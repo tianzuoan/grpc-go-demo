@@ -2,17 +2,14 @@ package main
 
 import (
 	"context"
-	"crypto/tls"
-	"crypto/x509"
+	"github.com/tianzuoan/grpc-go-demo/helper"
 	"github.com/tianzuoan/grpc-go-demo/service"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-	"io/ioutil"
 	"log"
 )
 
 const (
-	ADDRESS = ":8080"
+	ADDRESS = ":8081"
 )
 
 func main() {
@@ -45,7 +42,7 @@ func grpcServerInsecure() {
 
 func grpcServerWithCredential() {
 	//创建凭证
-	transportCredentials, err := credentials.NewClientTLSFromFile("../keys/server.crt", "yncmall.cn")
+	transportCredentials, err := helper.GetClientCredentialForMethodGrpcServerWithCredential()
 	if err != nil {
 		log.Fatal("certificated authorized failed!", err)
 	}
@@ -73,18 +70,8 @@ func grpcServerWithCredential() {
 
 func grpcServerWithCACertificate() {
 	//创建凭证
-	certificate, err := tls.LoadX509KeyPair("../ca_cert/client.pem", "../ca_cert/client.key")
-	if err != nil {
-		log.Fatal("certificate load failed!err:", err)
-	}
-	certPool := x509.NewCertPool()
-	caPemContentBytes, err := ioutil.ReadFile("../ca_cert/ca.pem")
-	certPool.AppendCertsFromPEM(caPemContentBytes)
-	creds := credentials.NewTLS(&tls.Config{
-		Certificates: []tls.Certificate{certificate},
-		ServerName:   "localhost",
-		RootCAs:      certPool,
-	})
+	creds := helper.GetClientCredentialForMethodGrpcServerWithCACertificate()
+
 	//通过grpc 库 建立一个连接（带凭证）
 	conn, err := grpc.Dial(ADDRESS, grpc.WithTransportCredentials(creds))
 	if err != nil {

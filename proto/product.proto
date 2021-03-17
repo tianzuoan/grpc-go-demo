@@ -1,0 +1,69 @@
+syntax = "proto3"; //声明proto的版本
+
+//声明 包名
+package service;
+
+import "google/api/annotations.proto";
+import "model.proto";
+
+
+//声明grpc服务
+service ProductService {
+    rpc GetProductInfo (GetProductInfoRequest) returns (GetProductInfoReply) {
+        option (google.api.http) = {
+            get: "/product/{product_id}"
+        };
+    }
+
+    rpc GetProductStock (GetProductStockRequest) returns (GetProductStockReply) {
+        option (google.api.http) = {
+            get: "/product/{product_id}/stock"
+        };
+    }
+    rpc GetProductStockList (PageRequest) returns (GetProductStockListReply) {
+        option (google.api.http) = {
+            get: "/product/stocks"
+        };
+    }
+
+    rpc GetProductList (PageRequest) returns (GetProductListReply) {
+        option (google.api.http) = {
+            get: "/product/list"
+        };
+    }
+}
+
+message GetProductInfoRequest {
+    int32 product_id = 1;
+}
+
+message GetProductInfoReply {
+    Product product = 1;
+}
+
+message GetProductStockRequest {
+    int32 product_id = 1;
+    ProductArea product_area = 2;
+}
+
+message GetProductStockReply {
+    int64 stock = 1;
+}
+
+message GetProductListRequest {
+    int32 page_index = 1;
+    int32 page_size = 2;
+}
+
+message GetProductStockListReply {
+    repeated GetProductStockReply list = 1;
+}
+
+message GetProductListReply {
+    repeated Product list = 1;
+}
+
+message PageRequest {
+    int32 page_index = 1;
+    int32 page_size = 2;
+}

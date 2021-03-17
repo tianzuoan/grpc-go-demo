@@ -1,0 +1,30 @@
+syntax = "proto3"; //声明proto的版本
+
+//声明 包名
+package service;
+import "google/protobuf/timestamp.proto";
+
+message Product {
+    int32 id = 1;
+    string name = 2;
+    float price = 3;
+    int64 stock = 4;
+}
+
+message Order {
+    int32 order_id = 1;
+    string order_no = 2;
+    int32 user_id = 3;
+    float order_payment = 4;
+    google.protobuf.Timestamp order_time = 5;
+}
+
+enum ProductArea {
+    A = 0;
+    B = 1;
+    C = 2;
+}
+
+
+
+
