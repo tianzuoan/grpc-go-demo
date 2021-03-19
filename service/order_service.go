@@ -12,16 +12,16 @@ func NewOrderServiceServer() *OrderService {
 	return &OrderService{}
 }
 
-func (s *OrderService) NewOrder(ctx context.Context, req *Order) (*NewOrderReply, error) {
+func (s *OrderService) NewOrder(ctx context.Context, req *NewOrderRequest) (*NewOrderReply, error) {
 	return &NewOrderReply{
 		Status:  http.StatusOK,
 		Message: "order created success!",
 		Data: &Order{
-			OrderId:      req.OrderId,
-			OrderNo:      req.OrderNo,
-			UserId:       req.UserId,
-			OrderPayment: req.OrderPayment,
-			OrderTime:    req.OrderTime,
+			OrderId:      req.Order.OrderId,
+			OrderNo:      req.Order.OrderNo,
+			UserId:       req.Order.UserId,
+			OrderPayment: req.Order.OrderPayment,
+			OrderTime:    req.Order.OrderTime,
 		},
 	}, nil
 }

@@ -11,7 +11,7 @@ import "model.proto";
 service ProductService {
     rpc GetProductInfo (GetProductInfoRequest) returns (GetProductInfoReply) {
         option (google.api.http) = {
-            get: "/product/{product_id}"
+            get: "/product/{product_id}/detail"
         };
     }
 
@@ -20,6 +20,7 @@ service ProductService {
             get: "/product/{product_id}/stock"
         };
     }
+
     rpc GetProductStockList (PageRequest) returns (GetProductStockListReply) {
         option (google.api.http) = {
             get: "/product/stocks"
@@ -30,6 +31,18 @@ service ProductService {
         option (google.api.http) = {
             get: "/product/list"
         };
+    }
+
+    //服务端流模式
+    rpc GetProductStockListByServerStream (PageRequest) returns (stream GetProductStockListReply) {
+    }
+
+    //客户端流模式
+    rpc GetProductStockListByClientStream (stream ProductIdsRequest) returns (GetProductStockListReply) {
+    }
+
+    //双向流模式
+    rpc GetProductStockListByTwinsStream (stream ProductIdsRequest) returns (stream GetProductStockListReply) {
     }
 }
 
@@ -47,7 +60,8 @@ message GetProductStockRequest {
 }
 
 message GetProductStockReply {
-    int64 stock = 1;
+    int32 product_id = 1;
+    int64 stock = 2;
 }
 
 message GetProductListRequest {
@@ -66,4 +80,12 @@ message GetProductListReply {
 message PageRequest {
     int32 page_index = 1;
     int32 page_size = 2;
+}
+
+message ProductRequest {
+    int32 product_id = 1;
+}
+
+message ProductIdsRequest {
+    repeated int32 product_ids = 1;
 }
