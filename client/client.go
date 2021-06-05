@@ -6,6 +6,7 @@ import (
 	"github.com/tianzuoan/grpc-go-demo/helper"
 	"github.com/tianzuoan/grpc-go-demo/service"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"io"
 	"log"
 	"time"
@@ -16,11 +17,12 @@ const (
 )
 
 func main() {
+	grpcServerInsecure(true)
 	//grpcServerWithCredential()
-	grpcServerWithCACertificate()
+	//grpcServerWithCACertificate()
 }
 
-func grpcServerInsecure() {
+func grpcServerInsecure(hasInterceptor bool) {
 	//通过grpc 库 建立一个连接
 	conn, err := grpc.Dial(ADDRESS, grpc.WithInsecure())
 	if err != nil {
@@ -31,12 +33,21 @@ func grpcServerInsecure() {
 	//通过刚刚的连接 生成一个client对象。
 	c := service.NewTinaClient(conn)
 	//直接通过 client对象 调用 服务端的函数
-	r, err := c.SayHello(context.Background(), &service.HelloRequest{Name: "马德福"})
+
+	var ctx context.Context
+	if hasInterceptor {
+		md := metadata.Pairs("userName", "tianzuoan", "age", "28")
+		// 新建一个有 metadata 的 context
+		ctx = metadata.NewOutgoingContext(context.Background(), md)
+	} else {
+		ctx = context.Background()
+	}
+	r, err := c.SayHello(ctx, &service.HelloRequest{Name: "马德福"})
 	if err != nil {
 		log.Fatal("tina service could not say hello:", err)
 	}
 	log.Printf("tina say hello: %s", r.Message)
-	langReply, err := c.LearnForeignLanguage(context.Background(), &service.LanguageRequest{Kind: "chinese"})
+	langReply, err := c.LearnForeignLanguage(ctx, &service.LanguageRequest{Kind: "chinese"})
 	if err != nil {
 		log.Fatal("could not learn language,reason is :%v", err)
 	}

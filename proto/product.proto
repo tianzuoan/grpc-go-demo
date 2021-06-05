@@ -6,86 +6,88 @@ package service;
 import "google/api/annotations.proto";
 import "model.proto";
 
+option go_package = "service/";
+
 
 //声明grpc服务
 service ProductService {
-    rpc GetProductInfo (GetProductInfoRequest) returns (GetProductInfoReply) {
-        option (google.api.http) = {
-            get: "/product/{product_id}/detail"
-        };
-    }
+  rpc GetProductInfo (GetProductInfoRequest) returns (GetProductInfoReply) {
+    option (google.api.http) = {
+      get: "/product/{product_id}/detail"
+    };
+  }
 
-    rpc GetProductStock (GetProductStockRequest) returns (GetProductStockReply) {
-        option (google.api.http) = {
-            get: "/product/{product_id}/stock"
-        };
-    }
+  rpc GetProductStock (GetProductStockRequest) returns (GetProductStockReply) {
+    option (google.api.http) = {
+      get: "/product/{product_id}/stock"
+    };
+  }
 
-    rpc GetProductStockList (PageRequest) returns (GetProductStockListReply) {
-        option (google.api.http) = {
-            get: "/product/stocks"
-        };
-    }
+  rpc GetProductStockList (PageRequest) returns (GetProductStockListReply) {
+    option (google.api.http) = {
+      get: "/product/stocks"
+    };
+  }
 
-    rpc GetProductList (PageRequest) returns (GetProductListReply) {
-        option (google.api.http) = {
-            get: "/product/list"
-        };
-    }
+  rpc GetProductList (PageRequest) returns (GetProductListReply) {
+    option (google.api.http) = {
+      get: "/product/list"
+    };
+  }
 
-    //服务端流模式
-    rpc GetProductStockListByServerStream (PageRequest) returns (stream GetProductStockListReply) {
-    }
+  //服务端流模式
+  rpc GetProductStockListByServerStream (PageRequest) returns (stream GetProductStockListReply) {
+  }
 
-    //客户端流模式
-    rpc GetProductStockListByClientStream (stream ProductIdsRequest) returns (GetProductStockListReply) {
-    }
+  //客户端流模式
+  rpc GetProductStockListByClientStream (stream ProductIdsRequest) returns (GetProductStockListReply) {
+  }
 
-    //双向流模式
-    rpc GetProductStockListByTwinsStream (stream ProductIdsRequest) returns (stream GetProductStockListReply) {
-    }
+  //双向流模式
+  rpc GetProductStockListByTwinsStream (stream ProductIdsRequest) returns (stream GetProductStockListReply) {
+  }
 }
 
 message GetProductInfoRequest {
-    int32 product_id = 1;
+  int32 product_id = 1;
 }
 
 message GetProductInfoReply {
-    Product product = 1;
+  Product product = 1;
 }
 
 message GetProductStockRequest {
-    int32 product_id = 1;
-    ProductArea product_area = 2;
+  int32 product_id = 1;
+  ProductArea product_area = 2;
 }
 
 message GetProductStockReply {
-    int32 product_id = 1;
-    int64 stock = 2;
+  int32 product_id = 1;
+  int64 stock = 2;
 }
 
 message GetProductListRequest {
-    int32 page_index = 1;
-    int32 page_size = 2;
+  int32 page_index = 1;
+  int32 page_size = 2;
 }
 
 message GetProductStockListReply {
-    repeated GetProductStockReply list = 1;
+  repeated GetProductStockReply list = 1;
 }
 
 message GetProductListReply {
-    repeated Product list = 1;
+  repeated Product list = 1;
 }
 
 message PageRequest {
-    int32 page_index = 1;
-    int32 page_size = 2;
+  int32 page_index = 1;
+  int32 page_size = 2;
 }
 
 message ProductRequest {
-    int32 product_id = 1;
+  int32 product_id = 1;
 }
 
 message ProductIdsRequest {
-    repeated int32 product_ids = 1;
+  repeated int32 product_ids = 1;
 }

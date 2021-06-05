@@ -6,23 +6,25 @@ package service;
 import "google/api/annotations.proto";
 import "model.proto";
 
+option go_package = "service/";
+
 
 //声明grpc服务
 service OrderService {
-    rpc NewOrder (NewOrderRequest) returns (NewOrderReply) {
-        option (google.api.http) = {
-            post: "/order"
-            body: "order"
-        };
-    }
+  rpc NewOrder (NewOrderRequest) returns (NewOrderReply) {
+    option (google.api.http) = {
+      post: "/order"
+      body: "order"
+    };
+  }
 }
 
 message NewOrderRequest {
-    Order order = 1;
+  Order order = 1;
 }
 
 message NewOrderReply {
-    int32 status = 1;
-    string message = 2;
-    Order data = 3;
+  int32 status = 1;
+  string message = 2;
+  Order data = 3;
 }

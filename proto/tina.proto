@@ -3,38 +3,40 @@ syntax = "proto3"; //声明proto的版本
 //声明 包名
 package service;
 
+option go_package = "service/";
+
 
 //声明grpc服务
 service tina {
-    /*
-    声名一个 sayhello 接口
-    它的参数 是 HelloRequest
-    它的返回参数是 HelloReply
-    */
-    rpc SayHello (HelloRequest) returns (HelloReply) {
-    }
+  /*
+  声名一个 sayhello 接口
+  它的参数 是 HelloRequest
+  它的返回参数是 HelloReply
+  */
+  rpc SayHello (HelloRequest) returns (HelloReply) {
+  }
 
-    rpc LearnForeignLanguage (LanguageRequest) returns (LanguageReply) {
-    }
+  rpc LearnForeignLanguage (LanguageRequest) returns (LanguageReply) {
+  }
 }
 
 //参数结构
 message HelloRequest {
-    string name = 1;
+  string name = 1;
 }
 
 //参数结构
 message HelloReply {
-    string message = 1;
+  string message = 1;
 }
 
 message LanguageRequest {
-    string kind = 1;
+  string kind = 1;
 }
 
 
 message LanguageReply {
-    uint32 score = 1;
+  uint32 score = 1;
 }
 
-//protoc --go_out=plugins=grpc:../service/ tina.proto
+//protoc --go_out=plugins=grpc:../ tina.proto

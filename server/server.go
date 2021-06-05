@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/tianzuoan/grpc-go-demo/helper"
+	"github.com/tianzuoan/grpc-go-demo/interceptor"
 	"github.com/tianzuoan/grpc-go-demo/service"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -14,19 +15,25 @@ import (
 const PORT = ":8081"
 
 func main() {
+	grpcServerInsecure(true)
 	//grpcServerWithHttp2()
 	//grpcServerWithCACertificate()
-	grpcHttpServerWithCACertificate()
+	//grpcHttpServerWithCACertificate()
 }
 
-func grpcServerInsecure() {
+func grpcServerInsecure(hasInterceptor bool) {
 	//监听端口
 	lis, err := net.Listen("tcp", PORT)
 	if err != nil {
 		return
 	}
 	//创建一个grpc 服务器
-	grpcServer := grpc.NewServer()
+	var grpcServer *grpc.Server
+	if hasInterceptor {
+		grpcServer = grpc.NewServer(grpc.ChainUnaryInterceptor(interceptor.Authorization))
+	} else {
+		grpcServer = grpc.NewServer()
+	}
 	//注册事件
 	service.RegisterTinaServer(grpcServer, service.NewTinaService())
 
