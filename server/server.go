@@ -15,10 +15,9 @@ import (
 const PORT = ":8081"
 
 func main() {
-	grpcServerInsecure(true)
+	grpcServerInsecure(false)
 	//grpcServerWithHttp2()
 	//grpcServerWithCACertificate()
-	//grpcHttpServerWithCACertificate()
 }
 
 func grpcServerInsecure(hasInterceptor bool) {
@@ -36,6 +35,8 @@ func grpcServerInsecure(hasInterceptor bool) {
 	}
 	//注册事件
 	service.RegisterTinaServer(grpcServer, service.NewTinaService())
+	service.RegisterProductServiceServer(grpcServer, service.NewProductServiceServer())
+	service.RegisterOrderServiceServer(grpcServer, service.NewOrderServiceServer())
 
 	//gRPC服务反射,方便grpcurl调试
 	reflection.Register(grpcServer)
@@ -60,6 +61,8 @@ func grpcServerWithCredential() {
 	grpcServer := grpc.NewServer(grpc.Creds(transportCredentials))
 	//注册事件
 	service.RegisterTinaServer(grpcServer, service.NewTinaService())
+	service.RegisterProductServiceServer(grpcServer, service.NewProductServiceServer())
+	service.RegisterOrderServiceServer(grpcServer, service.NewOrderServiceServer())
 
 	//gRPC服务反射,方便grpcurl调试
 	reflection.Register(grpcServer)
@@ -79,6 +82,8 @@ func grpcServerWithHttp2() {
 	grpcServer := grpc.NewServer(grpc.Creds(transportCredentials))
 	//注册事件
 	service.RegisterTinaServer(grpcServer, service.NewTinaService())
+	service.RegisterProductServiceServer(grpcServer, service.NewProductServiceServer())
+	service.RegisterOrderServiceServer(grpcServer, service.NewOrderServiceServer())
 
 	//gRPC服务反射,方便grpcurl调试
 	reflection.Register(grpcServer)
@@ -102,26 +107,6 @@ func grpcServerWithHttp2() {
 }
 
 func grpcServerWithCACertificate() {
-	lis, err := net.Listen("tcp", PORT)
-	if err != nil {
-		return
-	}
-
-	creds := helper.GetServerCredentialForMethodGrpcServerWithCACertificate()
-	//创建一个grpc 服务器（带证书）
-	grpcServer := grpc.NewServer(grpc.Creds(creds))
-	//注册事件
-	service.RegisterTinaServer(grpcServer, service.NewTinaService())
-
-	//gRPC服务反射,方便grpcurl调试
-	reflection.Register(grpcServer)
-
-	log.Printf("grpc server start at: %v", PORT)
-	//处理链接
-	_ = grpcServer.Serve(lis)
-}
-
-func grpcHttpServerWithCACertificate() {
 	lis, err := net.Listen("tcp", PORT)
 	if err != nil {
 		return

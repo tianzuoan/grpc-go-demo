@@ -17,7 +17,7 @@ const (
 )
 
 func main() {
-	grpcServerInsecure(true)
+	grpcServerInsecure(false)
 	//grpcServerWithCredential()
 	//grpcServerWithCACertificate()
 }
@@ -52,6 +52,13 @@ func grpcServerInsecure(hasInterceptor bool) {
 		log.Fatal("could not learn language,reason is :%v", err)
 	}
 	log.Printf("learn language,the score is:%v", langReply.Score)
+	c1 := service.NewProductServiceClient(conn)
+
+	res, err := c1.GetProductList(ctx, &service.PageRequest{
+		PageIndex: 1,
+		PageSize:  3,
+	})
+	fmt.Println(res)
 }
 
 func grpcServerWithCredential() {

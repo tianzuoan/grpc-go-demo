@@ -9,6 +9,21 @@ import (
 	"time"
 )
 
+type CustomResponse struct {
+	Code    int         `json:"code"`
+	Message string      `json:"message"`
+	Detail  string      `json:"detail"`
+	Data    interface{} `json:"data"`
+}
+
+// GetProductListReply实现自定义grpc-gateway http接口数据返回格式，只需实现
+//type responseBody interface {
+//   XXX_ResponseBody() interface{}
+//}接口
+func (x *GetProductListReply) XXX_ResponseBody() interface{} {
+	return &CustomResponse{Code: 0, Message: "success", Detail: "", Data: x}
+}
+
 type ProductService struct {
 }
 
